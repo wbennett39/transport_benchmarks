@@ -16,9 +16,9 @@ from .show import show
 class rms_plotter:
     
     def __init__(self, tfinal, M, source_name):
-        data_folder = Path("moving_mesh_transport")
+        data_folder = Path("benchmarks")
         self.data_file_path = data_folder / 'run_data_RMS.h5'
-        self.plot_file_path = data_folder / "plots"
+        self.plot_file_path = data_folder /  "plots"
         # self.case_list = ["uncol_mov", "no_uncol_stat", "uncol_stat", "no_uncol_stat"]
         self.tfinal = tfinal
         self.M = M
@@ -186,7 +186,7 @@ class rms_plotter:
             interp_bench = bench(xs)
             plt.plot(xs, interp_bench, "-k")
             plt.plot(-xs, interp_bench, "-k")
-            show(file_path_string + f"MMS_t_{tfinal}_benchmark")
+            show(file_path_string + f"/MMS_t_{tfinal}_benchmark")
         elif source_name == "gaussian_IC_2D":
             plt.xlabel("r", fontsize = fntsize)
             source_type = np.array([0,0,0,0,0,0,1,0])
