@@ -30,7 +30,7 @@ To run more solutions, run `greens.do_all()`. Solutions at different times can b
 
 ``gaussian_source(t, npnts, t0 = 5)``
 
->>>>>>> 487d2e980567ebd6c7cc8888396204e352d0af44
+
 ``gaussian_IC_2D(t, npnts)``
 
 ``line_source(t, npnts)``
