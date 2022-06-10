@@ -20,10 +20,11 @@ To run more solutions, run `greens.do_all()`. Solutions at different times can b
 ``square_IC(t, npnts, x0 = 0.5)``
 
 ``square_source(t, npnts, x0 = 0.5, t0 = 5)``
-<<<<<<< HEAD
+
 ``gaussian_IC(t, npnts, sigma = 0.5)``
+
 ``gaussian_source(t, npnts, t0 = 5, sigma = 0.5)``
-=======
+
 
 ``gaussian_IC(t, npnts)``
 
