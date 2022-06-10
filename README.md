@@ -28,6 +28,7 @@ At this release, the integrator easily computes solutions at any time that the u
 
 ### Notes on the Gaussian pulse and source
 Since the Gaussian sources are infinite, it is necessary to choose a solution interval width where the solution is practically zero at the edge. To this end, the integrator checks at what x location the value of the solution goes to a user specified tolerance and and prints "solution goes to (tol) at (x val)". The script `benchmarks.py` takes this information into account and uses a different `x0` for each evaluation time. For example, since the solution for the Gaussian pulse is smaller than `1e-10` by `x=3.16`, the code sets,
-``
+
 ``           if t == 1:
-                self.xs = np.linspace(0.0, 3.5, npnts)``
+                self.xs = np.linspace(0.0, 3.5, npnts)
+``
