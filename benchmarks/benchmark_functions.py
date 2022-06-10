@@ -108,16 +108,16 @@ def uncollided_square_IC(xx, t, x0):
     return temp
 
 @njit
-def gaussian_source_integrand(tau, t, x):
+def gaussian_source_integrand(tau, t, x, sigma):
     abx = abs(x)
     temp = tau*0
     # for i in range(tau.size):
     tp = t - tau
         
     if tp != 0:
-        erf1 = math.erf(2*(tp - abx)) 
-        erf2 = math.erf(2*(tp + abx))
-        temp = math.exp(-tp)* (erf1 + erf2) / tp
+        erf1 = math.erf((tp - abx)/sigma) 
+        erf2 = math.erf((tp + abx)/sigma)
+        temp = math.exp(-tp) * (erf1 + erf2) / tp / 4.0
     else:
         temp = 0.0
     return temp
@@ -169,11 +169,11 @@ def jit_F1(integrand_function):
 
 
 @njit
-def source(s, source_type):
+def source(s, source_type, sigma):
     if source_type == 0:     # square 
         return 1.0
     elif source_type == 1:   # gaussian 
-        return np.exp(-4*s*s)
+        return np.exp(-s*s/sigma/sigma)
     
 @njit 
 def heaviside(arg):
@@ -192,6 +192,7 @@ def F1(args):
     x = args[3]
     t = args[4]
     source_type = args[5]
+    sigma = args[6]
     
     ## define new variables  ##
     xp = x-s
@@ -211,7 +212,7 @@ def F1(args):
         
         complex_term = np.exp(tp*((1 - eta**2)*xi/2.))*xi**2
 
-        res = (1/np.cos(u/2.0))**2*complex_term.real * (1/math.pi/8) * (1 - eta**2) * math.exp(-tp) * source(s, source_type)
+        res = (1/np.cos(u/2.0))**2*complex_term.real * (1/math.pi/8) * (1 - eta**2) * math.exp(-tp) * source(s, source_type, sigma)
     
         return res
     
@@ -228,6 +229,7 @@ def F1_spacefirst(args):
     x = args[3]
     t = args[4]
     source_type = args[5]
+    sigma = args[6]
     
     ## define new variables  ##
     xp = x-s
@@ -247,7 +249,7 @@ def F1_spacefirst(args):
         
         complex_term = np.exp(tp*((1 - eta**2)*xi/2.))*xi**2
 
-        res = (1/np.cos(u/2.0))**2*complex_term.real * (1/math.pi/8) * (1 - eta**2) * math.exp(-tp) * source(s, source_type)
+        res = (1/np.cos(u/2.0))**2*complex_term.real * (1/math.pi/8) * (1 - eta**2) * math.exp(-tp) * source(s, source_type, sigma)
     
         return res
     
@@ -259,19 +261,20 @@ def F1_spacefirst(args):
 @jit_F1
 def F(args):
     """ integrand for the double integral for the uncollided solution. ags = s, tau, t, x
-    the  sqrt(pi)/8 is left out 
+    the  sigma * sqrt(pi) is left out 
     """
     s = args[0]
     tau = args[1]
     t = args[2]
     x = args[3]
     source_type = args[4]
+    sigma = args[6]
     ## define new variables
     xp = x - s
     tp = t - tau
     ###
     if 1 - abs(xp/tp) > 0.0 :  
-        return math.exp(-tp)/2/tp * source(s, source_type)
+        return math.exp(-tp)/2/tp * source(s, source_type, sigma)
     else:
         return 0.0
     
@@ -280,13 +283,14 @@ def F_gaussian_source(args):
     tau = args[0]
     t = args[1]
     x = args[2]
+    sigma = args[3]
     
     abx = abs(x)
     tp = t - tau
     
     if tp != 0:
-        erf1 = math.erf(2*(tp - abx)) 
-        erf2 = math.erf(2*(tp + abx))
+        erf1 = math.erf((tp - abx)/sigma) 
+        erf2 = math.erf((tp + abx)/sigma)
         return math.exp(-tp)* (erf1 + erf2) / tp
     else:
         return 0.0

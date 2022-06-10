@@ -16,10 +16,11 @@ def opts0(*args, **kwargs):
 
 class uncollided_class:
     
-    def __init__(self, source_type, x0, t0):
+    def __init__(self, source_type, x0, t0, sigma):
         self.source_type = source_type
         self.x0 = x0
         self.t0 = t0
+        self.sigma = sigma
         
        
     def plane_IC(self, xs, t):
@@ -55,7 +56,7 @@ class uncollided_class:
         sqrtpi = math.sqrt(math.pi)
         for ix in range(xs.size):
             xx = xs[ix]
-            temp[ix] = math.exp(-t) * sqrtpi * (math.erf(2*t-2*xx) + math.erf(2*t+2*xx))/(8.0 * t + 1e-12)
+            temp[ix] = math.exp(-t) * sqrtpi * self.sigma * (math.erf((t-xx)/self.sigma) + math.erf((t+xx)/self.sigma))/(4.0 * t + 1e-14)  
         return temp 
     
     def gaussian_source(self, xs, t):
@@ -66,9 +67,9 @@ class uncollided_class:
         sqrtpi = math.sqrt(math.pi)
         for ix in range(xs.size):
             x = xs[ix]
-            result = integrate.nquad(gaussian_source_integrand, [[0, self.t0]], args =  (t, x))[0]
+            result = integrate.nquad(gaussian_source_integrand, [[0, self.t0]], args =  (t, x, self.sigma))[0]
             temp[ix] = result
-        return temp*sqrtpi/8.0  
+        return temp * sqrtpi * self.sigma  
     
     def uncollided_gauss_2D_first_integral(self, v, x, y, t):
         """ integrates the line source over s (x dummy variable)

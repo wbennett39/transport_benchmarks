@@ -17,13 +17,14 @@ from .collided import collided_class
 ###############################################################################
 
 class make_benchmark:
-    def __init__(self, source_type, x0, t0):
+    def __init__(self, source_type, x0, t0, sigma):
         self.x0 = x0
         self.t0 = t0
         self.source_type = source_type
+        self.sigma = sigma
         
-        self.call_uncollided = uncollided_class(source_type, self.x0, self.t0)
-        self.call_collided = collided_class(source_type, self.x0, self.t0)
+        self.call_uncollided = uncollided_class(source_type, self.x0, self.t0, self.sigma)
+        self.call_collided = collided_class(source_type, self.x0, self.t0, self.sigma)
     
     def integrate(self, t, npnts):
         self.t = t

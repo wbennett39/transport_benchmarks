@@ -18,8 +18,8 @@ To run more solutions, run `greens.do_all()`. Solutions at different times can b
 ``plane_IC(t, npnts)``
 ``square_IC(t, npnts, x0 = 0.5)``
 ``square_source(t, npnts, x0 = 0.5, t0 = 5)``
-``gaussian_IC(t, npnts)``
-``gaussian_source(t, npnts, t0 = 5)``
+``gaussian_IC(t, npnts, sigma = 0.5)``
+``gaussian_source(t, npnts, t0 = 5, sigma = 0.5)``
 ``gaussian_IC_2D(t, npnts)``
 ``line_source(t, npnts)``
 
