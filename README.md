@@ -16,11 +16,17 @@ To plot, run `plotter.plot_all_benchmarks(tfinal)`. Results will be saved in the
 To run more solutions, run `greens.do_all()`. Solutions at different times can be found by running functions from the `integrate_greens` script. For example, to calculate another time point for the square source, run `greens.square_source(tfinal, npnts, x0 = 0.5, t0 = 5)` where `npnts` is the number of evaluation points. The parameters `x0` and `t0` do not have meaning for all source configurations. The arguments for each source are:
 
 ``plane_IC(t, npnts)``
+
 ``square_IC(t, npnts, x0 = 0.5)``
+
 ``square_source(t, npnts, x0 = 0.5, t0 = 5)``
+
 ``gaussian_IC(t, npnts)``
+
 ``gaussian_source(t, npnts, t0 = 5)``
+
 ``gaussian_IC_2D(t, npnts)``
+
 ``line_source(t, npnts)``
 
 ### Different evaluation times
