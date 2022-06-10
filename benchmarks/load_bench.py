@@ -17,7 +17,7 @@ from pathlib import Path
 ###############################################################################
 
 class load_bench:
-    def __init__(self, source_type, tfinal, x0):
+    def __init__(self, source_type, tfinal, x0, t_eval_times = [1, 5, 10]):
         data_folder = Path("benchmarks")
         benchmark_file_path = data_folder / "benchmarks.hdf5"
         self.ask_for_bench = True
@@ -25,19 +25,18 @@ class load_bench:
         self.tfinal = tfinal
         f = h5py.File(benchmark_file_path, "r")
         self.source_type_str = ["plane_IC", "square_IC", "square_source", "gaussian_IC", "MMS", "gaussian_source", "gaussian_IC_2D", "line_source"]
-        self.t_eval_str = ["t = 1", "t = 5", "t = 10"]
+        # self.t_eval_str = ["t = 1", "t = 5", "t = 10"] 
+        self.t_eval_str = []
+        for it in range(len(t_eval_times)):
+            self.t_eval_str.append(f"t = {t_eval_times[it]}") 
         index_of_source_name = np.argmin(np.abs(np.array(self.source_type)-1))
         source_name = self.source_type_str[index_of_source_name]
         self.x0 = x0
         if source_name == "MMS":
             self.ask_for_bench = False
             self.xs = np.linspace(0, tfinal + 1/10)
-        if tfinal == 1.0:
-            self.t_string_index = 0
-        elif tfinal == 5.0:
-            self.t_string_index = 1
-        elif tfinal == 10.0:
-            self.t_string_index = 2
+        if tfinal in t_eval_times:
+            self.t_string_index = t_eval_times.index(tfinal)
         else:
             self.ask_for_bench = False
             

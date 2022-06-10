@@ -15,16 +15,16 @@ def plane_IC(t, npnts):
     bench_class.save()
     bench_class.plot(fign)
     
-def square_IC(t, npnts):
+def square_IC(t, npnts, x0 = 0.5):
     fign = 2
-    bench_class = make_benchmark('square_IC', 0.5, 1e-16)
+    bench_class = make_benchmark('square_IC', x0, 1e-16)
     bench_class.integrate(t, npnts)
     bench_class.save()
     bench_class.plot(fign)
     
-def square_source(t, npnts):
+def square_source(t, npnts, x0 = 0.5, t0 = 5):
     fign = 3
-    bench_class = make_benchmark('square_source', 0.5, 5.0)
+    bench_class = make_benchmark('square_source', x0, t0)
     bench_class.integrate(t, npnts)
     bench_class.save()
     bench_class.plot(fign)
@@ -37,9 +37,9 @@ def gaussian_IC(t, npnts):
     bench_class.plot(fign)
 
 
-def gaussian_source(t, npnts):
+def gaussian_source(t, npnts, t0 = 5):
     fign = 4
-    bench_class = make_benchmark('gaussian_source', 4.0, 5.0)
+    bench_class = make_benchmark('gaussian_source', 4.0, t0)
     bench_class.integrate(t, npnts)
     bench_class.save()
     bench_class.plot(fign)
