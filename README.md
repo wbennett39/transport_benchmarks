@@ -16,11 +16,22 @@ To plot, run `plotter.plot_all_benchmarks(tfinal)`. Results will be saved in the
 To run more solutions, run `greens.do_all()`. Solutions at different times can be found by running functions from the `integrate_greens` script. For example, to calculate another time point for the square source, run `greens.square_source(tfinal, npnts, x0 = 0.5, t0 = 5)` where `npnts` is the number of evaluation points. The parameters `x0` and `t0` do not have meaning for all source configurations. The arguments for each source are:
 
 ``plane_IC(t, npnts)``
+
 ``square_IC(t, npnts, x0 = 0.5)``
+
 ``square_source(t, npnts, x0 = 0.5, t0 = 5)``
+<<<<<<< HEAD
 ``gaussian_IC(t, npnts, sigma = 0.5)``
 ``gaussian_source(t, npnts, t0 = 5, sigma = 0.5)``
+=======
+
+``gaussian_IC(t, npnts)``
+
+``gaussian_source(t, npnts, t0 = 5)``
+
+>>>>>>> 487d2e980567ebd6c7cc8888396204e352d0af44
 ``gaussian_IC_2D(t, npnts)``
+
 ``line_source(t, npnts)``
 
 ### Different evaluation times
@@ -28,6 +39,7 @@ At this release, the integrator easily computes solutions at any time that the u
 
 ### Notes on the Gaussian pulse and source
 Since the Gaussian sources are infinite, it is necessary to choose a solution interval width where the solution is practically zero at the edge. To this end, the integrator checks at what x location the value of the solution goes to a user specified tolerance and and prints "solution goes to (tol) at (x val)". The script `benchmarks.py` takes this information into account and uses a different `x0` for each evaluation time. For example, since the solution for the Gaussian pulse is smaller than `1e-10` by `x=3.16`, the code sets,
-``
+
 ``           if t == 1:
-                self.xs = np.linspace(0.0, 3.5, npnts)``
+                self.xs = np.linspace(0.0, 3.5, npnts)
+``
