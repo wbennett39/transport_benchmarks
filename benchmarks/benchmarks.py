@@ -32,22 +32,30 @@ class make_benchmark:
         self.npnts = npnts
         self.xs = np.linspace(0, t + self.x0, npnts)
         if self.source_type == "gaussian_IC_2D":
-            self.xs = np.linspace(0.0, t + 1/self.x0, npnts)
+            if t == 1:
+                self.xs = np.linspace(0.0, 3.7, npnts)
+            elif t == 5:
+                self.xs = np.linspace(0.0, 7.3, npnts)
+            elif t == 10:
+                self.xs = np.linspace(0.0, 12.7, npnts)
+
+
+
             
         elif self.source_type == "gaussian_IC":
             if t == 1:
-                self.xs = np.linspace(0.0, 3.3, npnts)
+                self.xs = np.linspace(0.0, 3.85, npnts)
             elif t == 5:
-                self.xs = np.linspace(0.0, 7, npnts)
+                self.xs = np.linspace(0.0, 7.7, npnts)
             elif t == 10:
-                self.xs = np.linspace(0.0, 11.6, npnts)
+                self.xs = np.linspace(0.0, 12.4, npnts)
         elif self.source_type == "gaussian_source":
             if t == 1:
-                self.xs = np.linspace(0.0, 3.5, npnts)
+                self.xs = np.linspace(0.0, 3.75, npnts)
             elif t == 5:
-                self.xs = np.linspace(0.0, 6.8, npnts)
+                self.xs = np.linspace(0.0, 7.5, npnts)
             elif t == 10:
-                self.xs = np.linspace(0.0, 11.3, npnts)
+                self.xs = np.linspace(0.0, 12.2, npnts)
             
         self.uncollided_sol = self.call_uncollided(self.xs, t)
         self.collided_sol = self.call_collided(self.xs, t)

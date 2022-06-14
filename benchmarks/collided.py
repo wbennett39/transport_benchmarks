@@ -17,9 +17,9 @@ import numpy as np
 def opts0(*args, **kwargs):
        return {'limit':10000000}
 def opts1(*args, **kwargs):
-       return {'limit':10000000}
+       return {'limit':1000}
 def opts2(*args, **kwargs):
-       return {'limit':10000000}
+       return {'limit':1000}
 
 class collided_class:
     def __init__(self, source_type, x0, t0, sigma):
@@ -87,8 +87,8 @@ class collided_class:
         
         if eta < 1:
             omega_b = math.sqrt(1-eta**2)
-            rest_collided = integrate.nquad(F2_2D_gaussian_pulse, [[0, math.pi], [omega_a, omega_b]], args = (thetap, s, rho, theta, t,  x0), opts = [opts0, opts0])[0]
-            first_collided = integrate.nquad(F1_2D_gaussian_pulse, [[omega_a, omega_b]], args = (thetap, s, rho, theta, t,  x0), opts = [opts0])[0]
+            rest_collided = integrate.nquad(F2_2D_gaussian_pulse, [[0, math.pi], [omega_a, omega_b]], args = (thetap, s, rho, theta, t,  x0), opts = [opts1, opts1])[0]
+            first_collided = integrate.nquad(F1_2D_gaussian_pulse, [[omega_a, omega_b]], args = (thetap, s, rho, theta, t,  x0), opts = [opts1])[0]
             res = rest_collided + first_collided
         return res
 
@@ -100,7 +100,7 @@ class collided_class:
         # b = rho + t
         # interval = [a, b]
         interval = find_intervals_2D_gaussian_s(rho, t, theta, thetap)
-        res = integrate.nquad(self.gaussian_pulse_2D_double_integral, [interval], args = (thetap, rho, t, theta, x0), opts = [opts0])[0]
+        res = integrate.nquad(self.gaussian_pulse_2D_double_integral, [interval], args = (thetap, rho, t, theta, x0), opts = [opts1])[0]
         
         return res
 
@@ -108,7 +108,7 @@ class collided_class:
         """ integrates over thetap
         """
 
-        res = integrate.nquad(self.collided_gauss_2D_s, [[0, math.pi*2]], args = (rho, t, x0), opts = [opts0])[0]
+        res = integrate.nquad(self.collided_gauss_2D_s, [[0, math.pi*2]], args = (rho, t, x0), opts = [opts1])[0]
         
         return res
     
@@ -117,13 +117,13 @@ class collided_class:
         res = 0.0
         if eta <1:
             omega_b = omega_b = math.sqrt(1-eta**2)
-            res = integrate.nquad(F_line_source_2, [[0, omega_b]], args = (u, rho, t), opts = [opts0])[0]
+            res = integrate.nquad(F_line_source_2, [[0, omega_b]], args = (u, rho, t), opts = [opts1])[0]
         return res
     
     def collided_line_source(self, rho, t):
         
-        res1  = integrate.nquad(self.F_line_source_2_first_integral, [[0, math.pi]], args = (rho, t), opts = [opts0])[0]
-        res2 = integrate.nquad(F_line_source_1, [[0, math.pi]], args = (rho, t), opts = [opts0])[0]
+        res1  = integrate.nquad(self.F_line_source_2_first_integral, [[0, math.pi]], args = (rho, t), opts = [opts1])[0]
+        res2 = integrate.nquad(F_line_source_1, [[0, math.pi]], args = (rho, t), opts = [opts1])[0]
         
         return res1 + res2
     
