@@ -61,7 +61,7 @@ class make_benchmark:
         self.collided_sol = self.call_collided(self.xs, t)
         
         if self.source_type == "gaussian_IC" or self.source_type == "gaussian_source" or self.source_type == "gaussian_IC_2D":
-            tol = 1e-10
+            tol = 1e-16
             index_of_zero_phi = check_gaussian_tail(self.uncollided_sol + self.collided_sol, tol)
             print(f"solution goes to {tol} at", self.xs[index_of_zero_phi])
             
