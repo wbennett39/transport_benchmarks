@@ -11,6 +11,8 @@ from .benchmark_functions import uncollided_square_source, uncollided_square_IC,
 import numpy as np
 def opts0(*args, **kwargs):
        return {'limit':10000000}
+def opts1(*args, **kwargs):
+       return {'limit':100}
    
 ###############################################################################
 
@@ -80,13 +82,13 @@ class uncollided_class:
             a = x - math.sqrt(sqrt_term)
             b = x + math.sqrt(sqrt_term)
             
-            res = integrate.nquad(uncollided_gauss_2D_integrand, [[a, b]], args = (v, x, y, t), opts = [opts0])[0]
+            res = integrate.nquad(uncollided_gauss_2D_integrand, [[a, b]], args = (v, x, y, t), opts = [opts1])[0]
         return res
 
     def uncollided_gauss_2D_second_integral(self, x, y, t):
         """ integrates the line source over v (y dummy variable)
         """
-        res = integrate.nquad(self.uncollided_gauss_2D_first_integral, [[-np.inf, np.inf]], args = (x, y, t), opts = [opts0])[0]
+        res = integrate.nquad(self.uncollided_gauss_2D_first_integral, [[-np.inf, np.inf]], args = (x, y, t), opts = [opts1])[0]
         return res
     
     def gaussian_IC_2D(self, rhos, t):

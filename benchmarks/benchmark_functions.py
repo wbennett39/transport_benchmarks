@@ -408,7 +408,13 @@ def eta_func_2d_gauss_cartesian(x, s, y, v, t):
     res = (x-s)**2 + (y-v)**2
     return math.sqrt(res)/t
 
-def uncollided_gauss_2D_integrand(s, v, x, y, t):
+@jit_F1
+def uncollided_gauss_2D_integrand(args):
+    s = args[0]
+    v = args[1]
+    x = args[2]
+    y = args[3]
+    t = args[4]
     res = 0.0
     eta = eta_func_2d_gauss_cartesian(x, s, y, v, t)
     if eta < 1:
