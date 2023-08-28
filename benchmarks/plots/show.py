@@ -21,7 +21,7 @@ import matplotlib.font_manager as fm
 import matplotlib.ticker as mtick
 from matplotlib.ticker import ScalarFormatter
 from scipy import optimize
-from labellines import labelLine, labelLines
+#from labellines import labelLine, labelLines
 import csv
 
 # font = fm.FontProperties(family = 'Gill Sans', fname = '/users/wbenn/Anaconda3/Library/Fonts/GillSans.ttc', size = 20)
