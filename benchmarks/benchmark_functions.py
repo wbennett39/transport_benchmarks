@@ -10,11 +10,14 @@ import math
 import numba 
 from scipy.special import expi
 from numba import njit
-from numba import cfunc,carray
+from numba import cfunc, carray
 from numba.types import intc, CPointer, float64
 from scipy import LowLevelCallable
 import h5py
 from pathlib import Path
+import cmath
+import ctypes
+from numba.extending import get_cython_function_address
 
 
 ###############################################################################
@@ -108,16 +111,16 @@ def uncollided_square_IC(xx, t, x0):
     return temp
 
 @njit
-def gaussian_source_integrand(tau, t, x, sigma):
+def gaussian_source_integrand(tau, t, x):
     abx = abs(x)
     temp = tau*0
     # for i in range(tau.size):
     tp = t - tau
         
     if tp != 0:
-        erf1 = math.erf((tp - abx)/sigma) 
-        erf2 = math.erf((tp + abx)/sigma)
-        temp = math.exp(-tp) * (erf1 + erf2) / tp / 4.0
+        erf1 = math.erf(2*(tp - abx)) 
+        erf2 = math.erf(2*(tp + abx))
+        temp = math.exp(-tp) * (erf1 + erf2) / tp
     else:
         temp = 0.0
     return temp
@@ -169,15 +172,15 @@ def jit_F1(integrand_function):
 
 
 @njit
-def source(s, source_type, sigma):
+def source(s, source_type):
     if source_type == 0:     # square 
         return 1.0
     elif source_type == 1:   # gaussian 
-        return np.exp(-s*s/sigma/sigma)
+        return np.exp(-4*s*s)
     
 @njit 
 def heaviside(arg):
-    if arg >= 0.0:
+    if arg > 0.0:
         return 1.0
     else:
         return 0.0
@@ -192,7 +195,7 @@ def F1(args):
     x = args[3]
     t = args[4]
     source_type = args[5]
-    sigma = args[6]
+    c = args[6]
     
     ## define new variables  ##
     xp = x-s
@@ -203,16 +206,16 @@ def F1(args):
         
         ## find xi ##
         q = (1+eta)/(1-eta)
-        zz = np.tan(u/2)
-        xi = (np.log(q) + u*1j)/(eta + zz*1j)
-        if abs(xi.real) < 1e-15:
-            xi = 0.0 + xi.imag
-        if abs(xi.imag) < 1e-15:
-            xi = xi.real + 0.0*1j
+        zz = math.tan(u/2)
+        xi = (math.log(q) + u * np.complex128(1.0j))/(eta + zz * np.complex128(1.0j))
+        # if abs(xi.real) < 1e-16:
+        #     xi = 0.0 + xi.imag
+        # if abs(xi.imag) < 1e-16:
+        #     xi = xi.real + 0.0*1j
         
-        complex_term = np.exp(tp*((1 - eta**2)*xi/2.))*xi**2
+        complex_term = cmath.exp(c*tp*((1. - eta**2)*xi/2.))*xi**2
 
-        res = (1/np.cos(u/2.0))**2*complex_term.real * (1/math.pi/8) * (1 - eta**2) * math.exp(-tp) * source(s, source_type, sigma)
+        res = (1./math.cos(u/2.0))**2*complex_term.real * (c/math.pi/8.0) * (1. - eta**2) * math.exp(-tp) * source(s, source_type)
     
         return res
     
@@ -229,27 +232,27 @@ def F1_spacefirst(args):
     x = args[3]
     t = args[4]
     source_type = args[5]
-    sigma = args[6]
+    c = args[6]
     
     ## define new variables  ##
     xp = x-s
     tp = t-tau
-    if abs(xp) < tp and tp > 0:
+    if abs(xp) <= tp and tp > 0:
         
         eta = xp/tp
         
         ## find xi ##
         q = (1+eta)/(1-eta)
-        zz = np.tan(u/2)
-        xi = (np.log(q) + u*1j)/(eta + zz*1j)
+        zz = math.tan(u/2)
+        xi = (math.log(q) + u * np.complex128(1.0j))/(eta + zz * np.complex128(1.0j))
         # if abs(xi.real) < 1e-15:
         #     xi = 0.0 + xi.imag
         # if abs(xi.imag) < 1e-15:
         #     xi = xi.real + 0.0*1j
         
-        complex_term = np.exp(tp*((1 - eta**2)*xi/2.))*xi**2
+        complex_term = cmath.exp(c*tp*((1 - eta**2)*xi/2.))*xi**2
 
-        res = (1/np.cos(u/2.0))**2*complex_term.real * (1/math.pi/8) * (1 - eta**2) * math.exp(-tp) * source(s, source_type, sigma)
+        res = (1/math.cos(u/2.0))**2*complex_term.real * (c/math.pi/8) * (1 - eta**2) * math.exp(-tp) * source(s, source_type)
     
         return res
     
@@ -261,20 +264,19 @@ def F1_spacefirst(args):
 @jit_F1
 def F(args):
     """ integrand for the double integral for the uncollided solution. ags = s, tau, t, x
-    the  sigma * sqrt(pi) is left out 
+    the  sqrt(pi)/8 is left out 
     """
     s = args[0]
     tau = args[1]
     t = args[2]
     x = args[3]
     source_type = args[4]
-    sigma = args[6]
     ## define new variables
     xp = x - s
     tp = t - tau
     ###
     if 1 - abs(xp/tp) > 0.0 :  
-        return math.exp(-tp)/2/tp * source(s, source_type, sigma)
+        return math.exp(-tp)/2/tp * source(s, source_type)
     else:
         return 0.0
     
@@ -283,22 +285,21 @@ def F_gaussian_source(args):
     tau = args[0]
     t = args[1]
     x = args[2]
-    sigma = args[3]
     
     abx = abs(x)
     tp = t - tau
     
     if tp != 0:
-        erf1 = math.erf((tp - abx)/sigma) 
-        erf2 = math.erf((tp + abx)/sigma)
+        erf1 = math.erf(2*(tp - abx)) 
+        erf2 = math.erf(2*(tp + abx))
         return math.exp(-tp)* (erf1 + erf2) / tp
     else:
         return 0.0
 
 @njit 
-def point_collided_2(u, r, t):
+def point_collided_2(u, r, t, c):
     eta = r/t
-    c = 1
+
     if eta >= 1:
         return 0.0
     else:
@@ -315,10 +316,10 @@ def point_collided_2(u, r, t):
     return result 
 
 @njit
-def point_collided_1(r,t):
+def point_collided_1(r,t,c):
     
     eta = r/t
-    c = 1
+    # c = 1
     if eta >= 1:
         return 0.0
     else:
@@ -331,13 +332,14 @@ def F_line_source_2(args):
     u = args[1]
     r = args[2]
     t = args[3]
+    c = args[4]
     
     eta = r/t
     
     if eta < 1:
         r_arg = t * math.sqrt(eta**2 + omega**2)
         
-        return 2 * t * point_collided_2(u, r_arg, t)
+        return 2 * t * point_collided_2(u, r_arg, t, c)
     else:
         return 0.0
 @jit_F1
@@ -345,13 +347,14 @@ def F_line_source_1(args):
     omega = args[0]
     r = args[1]
     t = args[2]
+    c = args[3]
     
     eta = r/t
     
     if eta < 1:
         r_arg = t * math.sqrt(eta**2 + omega**2)
         
-        return 2 * t * point_collided_1(r_arg, t)
+        return 2 * t * point_collided_1(r_arg, t, c)
     else:
         return 0.0
     
@@ -366,6 +369,7 @@ def F2_2D_gaussian_pulse(args):
     theta = args[5]
     t = args[6]
     x0 = args[7]
+    c = args[8]
     
     x = rho * math.cos(theta)
     y = rho * math.sin(theta)
@@ -376,7 +380,7 @@ def F2_2D_gaussian_pulse(args):
     
     if eta < 1:
         r_arg = t * math.sqrt(eta**2 + omega**2)
-        return s * 2 * t * point_collided_2(u, r_arg, t) * math.exp(-s**2/x0**2)
+        return s * 2 * t * point_collided_2(u, r_arg, t, c) * math.exp(-s**2/x0**2)
     else: 
         return 0 
 @jit_F1
@@ -388,6 +392,7 @@ def F1_2D_gaussian_pulse(args):
     theta = args[4]
     t = args[5]
     x0 = args[6]
+    c = args[7]
     
     x = rho * math.cos(theta)
     y = rho * math.sin(theta)
@@ -398,7 +403,7 @@ def F1_2D_gaussian_pulse(args):
     
     if eta < 1:
         r_arg = t * math.sqrt(eta**2 + omega**2)
-        return s * 2 * t * point_collided_1(r_arg, t) * math.exp(-s**2/x0**2)
+        return s * 2 * t * point_collided_1(r_arg, t, c) * math.exp(-s**2/x0**2)
     else: 
         return 0 
     
@@ -408,13 +413,7 @@ def eta_func_2d_gauss_cartesian(x, s, y, v, t):
     res = (x-s)**2 + (y-v)**2
     return math.sqrt(res)/t
 
-@jit_F1
-def uncollided_gauss_2D_integrand(args):
-    s = args[0]
-    v = args[1]
-    x = args[2]
-    y = args[3]
-    t = args[4]
+def uncollided_gauss_2D_integrand(s, v, x, y, t):
     res = 0.0
     eta = eta_func_2d_gauss_cartesian(x, s, y, v, t)
     if eta < 1:
@@ -438,12 +437,170 @@ def find_intervals_2D_gaussian_s(r, t, theta, thetap):
         if b < 0:
             b = 0
     return [a,b]
+######################## P1 SU-OLSON functions ################################
+_dble = ctypes.c_double
+addr = get_cython_function_address("scipy.special.cython_special", "__pyx_fuse_1iv")
+functype = ctypes.CFUNCTYPE(_dble, _dble, _dble)
+iv_fn = functype(addr)
+
+_dble = ctypes.c_double
+addr = get_cython_function_address("scipy.special.cython_special", "__pyx_fuse_0iv")
+functype = ctypes.CFUNCTYPE(_dble, _dble, _dble)
+iv_fn_imag = functype(addr)
+
+# @njit("float64(int64, complex128)")
+# def bessel_first_imag(n, z):
+#     return iv_fn_imag(n, z)
+
+@njit("float64(int64, float64)")
+def bessel_first(n, z):
+    return iv_fn(n, z)
+
+@jit_F1
+def P1_su_olson_term2_integrand(args):
+    s = args[0]
+    tau = args[1]
+    x = args[2]
+    t = args[3]
+    
+    temp = 0.0
+    temp2 = 0.0
+    sqrt3 = math.sqrt(3)
+
+    if tau < 40:
+        exp_term = math.exp(-tau)
+    else:
+        exp_term = 0.0
+
+    if t <= 10:            
+        if (tau - sqrt3 * abs(x-s)) > 0.0:
+            arg_t = math.sqrt(tau**2 - 3 * (x-s)**2)
+            if arg_t != 0:
+                temp2 = math.exp(-tau) * tau * bessel_first(1, arg_t) / arg_t
+    
+    elif t > 10:
+   
+        if (tau- sqrt3 * abs(x-s) > 0.0):
+            arg_t = math.sqrt(tau**2 - 3*(x-s)**2)
+            if arg_t != 0:
+                temp2 = math.exp(-tau) * tau * bessel_first(1, arg_t) / arg_t
+            
+    temp = sqrt3/2 * (temp2)
+    
+    return temp
+
+@jit_F1
+def P1_su_olson_term1_integrand(args):
+     s = args[0]
+     x = args[1]
+     t = args[2]
+     
+     temp_rad = 0.0
+     temp1 = 0.0
+     sqrt3 = math.sqrt(3)
+     if t <= 10:
+         if (t - sqrt3 * abs(x-s)) > 0:
+             temp1 = math.exp(-sqrt3 * abs(x-s)) * bessel_first(0.0, 0.0) 
+             
+     elif t > 10:
+         if (t - sqrt3 * abs(x-s) > 0.0) and (10 - t + sqrt3 * abs(x-s) > 0):
+             temp1 = math.exp(-sqrt3 * abs(x-s)) 
+             
+     temp_rad = sqrt3/2 * (temp1)
+     
+     return temp_rad
+
+@jit_F1
+def P1_su_olson_mat_integrand(args):
+    s = args[0]
+    tau = args[1]
+    x = args[2]
+    t = args[3]
+    
+    temp = 0.0
+    temp2 = 0.0
+    sqrt3 = math.sqrt(3)
+
+    arg_t = math.sqrt(tau**2 - 3 * (x-s)**2)
+    if (tau - sqrt3 * abs(x-s)) > 0:
+        temp2 = math.exp(-tau) * bessel_first(0, arg_t) 
+            
+    temp = sqrt3/2 * (temp2)
+    
+    return temp
+
+def find_su_olson_interval(x0, t, x):
+    left = max(-x0, (-math.sqrt(3) * t + 3 * x)/3)
+    right = min(x0, (math.sqrt(3) * t + 3 * x)/3)
+    return [left, right]
+
+
+@jit_F1
+def P1_gaussian_term1_integrand(args):
+    s = args[0]
+    x = args[1]
+    t = args[2]
+    sigma = args[3]
+    
+    temp = 0.0
+    if t <= 10:
+        temp = bessel_first(0,0) * math.exp(-s**2/sigma**2) * math.exp(-math.sqrt(3)*abs(x-s))
+    elif t > 10:
+       if  (10 - t + math.sqrt(3) * abs(x-s) > 0):
+            temp = bessel_first(0,0) * math.exp(-s**2/sigma**2) * math.exp(-math.sqrt(3)*abs(x-s))
+           
+    return math.sqrt(3)/2 * temp
+
+@jit_F1
+def P1_gaussian_term2_integrand(args):
+    s = args[0]
+    tau = args[1]
+    x = args[2]
+    t = args[3]
+    sigma = args[4]
+    
+    temp = 0.0
+    temp2 = 0.0
+    sqrt3 = math.sqrt(3)    
+    if (tau - sqrt3 * abs(x-s)) > 0.0:
+        arg_t = math.sqrt(tau**2 - 3 * (x-s)**2)
+        if arg_t != 0:
+            temp2 = math.exp(-tau) * tau * bessel_first(1, arg_t) * math.exp(-s**2/sigma**2) / arg_t 
+            
+    temp = sqrt3/2 * (temp2)
+    
+    return temp
+
+@jit_F1
+def P1_gaussian_mat_integrand(args):
+    s = args[0]
+    tau = args[1]
+    x = args[2]
+    t = args[3]
+    sigma = args[4]
+    
+    temp = 0.0
+    temp2 = 0.0
+    sqrt3 = math.sqrt(3)
+
+    arg_t = math.sqrt(tau**2 - 3 * (x-s)**2)
+    if (tau - sqrt3 * abs(x-s)) > 0:
+        temp2 = math.exp(-tau) * bessel_first(0, arg_t) * math.exp(-s**2/sigma**2)
+            
+    temp = sqrt3/2 * (temp2)
+    return temp
+        
+    
+    
 
 ######################saving solution##########################################
 def make_benchmark_file_structure():
     data_folder = Path("moving_mesh_transport/benchmarks")
     bench_file_path = data_folder / 'benchmarks.hdf5'
-    source_name_list = ['plane_IC', 'square_IC', 'square_source', 'gaussian_IC', 'gaussian_source', 'gaussian_IC_2D', 'line_source']
+    source_name_list = ['plane_IC', 'square_IC', 'square_source', 'gaussian_IC', 
+                        'gaussian_source', 'gaussian_IC_2D', 'line_source', 
+                        "P1_su_olson_rad", "P1_su_olson_mat", "P1_gaussian_rad_thick", 
+                        "P1_gaussian_mat_thick"]
     
     f = h5py.File(bench_file_path, "a")
     
@@ -454,12 +611,26 @@ def make_benchmark_file_structure():
     
     f.close()
 
-def write_to_file(xs, phi, uncol, tfinal, source_name, npnts):
-    data_folder = Path("benchmarks")
+def write_to_file(xs, phi, uncol, tfinal, source_name, npnts, x0_or_sigma):
+    data_folder = Path("moving_mesh_transport/benchmarks")
     bench_file_path = data_folder / 'benchmarks.hdf5'
     
+    if x0_or_sigma == 300:
+        if source_name == 'P1_gaussian_rad':
+            source_name = 'P1_gaussian_rad_thick'
+        elif source_name == 'P1_gaussian_mat':
+            source_name = 'P1_gaussian_mat_thick'
+    elif x0_or_sigma == 400:
+        if source_name == 'P1_su_olson_rad':
+            source_name = 'P1_su_olson_rad_thick'
+        elif source_name == 'P1_su_olson_mat':
+            source_name = 'P1_su_olson_mat_thick'
     with h5py.File(bench_file_path,'r+') as f:
         if f.__contains__(source_name + f'/t = {tfinal}'):
             del f[source_name + f'/t = {tfinal}'] 
         f.create_dataset(source_name + f'/t = {tfinal}', (3, npnts), dtype = "f", data=(xs, phi, uncol))
     f.close()
+
+    
+
+    
