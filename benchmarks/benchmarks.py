@@ -15,8 +15,8 @@ from .benchmark_functions import check_gaussian_tail
 from .uncollided import uncollided_class
 from .collided import collided_class
 
-from ..solver_functions.main_functions import plot_p1_su_olson_mathematica
-from .test_benchmarks import test_P1_against_mathematica
+# from ..solver_functions.main_functions import plot_p1_su_olson_mathematica
+# from .test_benchmarks importg test_P1_against_mathematica
 
 
 
@@ -28,7 +28,7 @@ class make_benchmark:
         self.t0 = t0
         self.source_type = source_type
         
-        self.call_uncollided = uncollided_class(source_type, self.x0, self.t0)
+        self.call_uncollided = uncollided_class(source_type, self.x0, self.t0, sigma)
         self.call_collided = collided_class(source_type, self.x0, self.t0, sigma)
         self.gaussian_type_sources = ['gaussian_IC', 'gaussian_source', 'gaussian_IC_2D', 
                                       'P1_gaussian_rad', 'P1_gaussian_mat']
@@ -37,7 +37,7 @@ class make_benchmark:
         self.c = c
     
     def recall_collided_uncollided_classes(self):
-        self.call_uncollided = uncollided_class(self.source_type, self.x0, self.t0)
+        self.call_uncollided = uncollided_class(self.source_type, self.x0, self.t0, self.sigma)
         self.call_collided = collided_class(self.source_type, self.x0, self.t0, self.sigma)
 
     

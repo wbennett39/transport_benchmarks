@@ -595,7 +595,7 @@ def P1_gaussian_mat_integrand(args):
 
 ######################saving solution##########################################
 def make_benchmark_file_structure():
-    data_folder = Path("moving_mesh_transport/benchmarks")
+    data_folder = Path("benchmarks")
     bench_file_path = data_folder / 'benchmarks.hdf5'
     source_name_list = ['plane_IC', 'square_IC', 'square_source', 'gaussian_IC', 
                         'gaussian_source', 'gaussian_IC_2D', 'line_source', 
@@ -612,7 +612,7 @@ def make_benchmark_file_structure():
     f.close()
 
 def write_to_file(xs, phi, uncol, tfinal, source_name, npnts, x0_or_sigma):
-    data_folder = Path("moving_mesh_transport/benchmarks")
+    data_folder = Path("benchmarks")
     bench_file_path = data_folder / 'benchmarks.hdf5'
     
     if x0_or_sigma == 300:
