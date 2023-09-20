@@ -111,19 +111,18 @@ def uncollided_square_IC(xx, t, x0):
     return temp
 
 @njit
-def gaussian_source_integrand(tau, t, x):
-    abx = abs(x)
-    temp = tau*0
-    # for i in range(tau.size):
-    tp = t - tau
+def gaussian_source_integrand(tau, t, x, sigma):
+        abx = abs(x)
+        temp = tau*0
+        tp = t - tau
         
-    if tp != 0:
-        erf1 = math.erf(2*(tp - abx)) 
-        erf2 = math.erf(2*(tp + abx))
-        temp = math.exp(-tp) * (erf1 + erf2) / tp
-    else:
-        temp = 0.0
-    return temp
+        if tp != 0:
+            erf1 = math.erf((tp - abx)/sigma) 
+            erf2 = math.erf((tp + abx)/sigma)
+            temp = math.exp(-tp) * (erf1 + erf2) / tp / 4.0
+        else:
+            temp = 0.0
+        return temp
 
 ## I believe this is incorrect because it does not integrate over angle
 
