@@ -35,13 +35,15 @@ class load_bench:
         if source_name == "MMS":
             self.ask_for_bench = False
             self.xs = np.linspace(0, tfinal + 1/10)
-        if tfinal in t_eval_times:
-            self.t_string_index = t_eval_times.index(tfinal)
-        else:
-            self.ask_for_bench = False
+        # if tfinal in t_eval_times:
+        # self.t_string_index = t_eval_times.index(tfinal)
+        self.t_string_index = 0
+        # else:
+        #     self.ask_for_bench = False
             
         if self.ask_for_bench == True:
-            tstring = self.t_eval_str[self.t_string_index]
+            # tstring = self.t_eval_str[self.t_string_index]
+            tstring = f't = {tfinal}'
             self.solution_dataset = f[source_name][tstring]
             self.xs = self.solution_dataset[0]
             self.phi = self.solution_dataset[1]
@@ -85,6 +87,7 @@ class load_bench:
         return [stiched_solution, stiched_uncollided_solution]
     
     def __call__(self, xs):
+        print(self.ask_for_bench)
         if self.ask_for_bench == True:
             original_xs = self.xs
             if xs[-1] > original_xs[-1]:
