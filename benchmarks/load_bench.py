@@ -44,7 +44,7 @@ class load_bench:
         if self.ask_for_bench == True:
             # tstring = self.t_eval_str[self.t_string_index]
             tstring = f't = {tfinal}'
-            self.solution_dataset = f[source_name][tstring]
+            self.solution_dataset = f[source_name][tstring + f'x0={x0}']
             self.xs = self.solution_dataset[0]
             self.phi = self.solution_dataset[1]
             self.phi_u = self.solution_dataset[2]
