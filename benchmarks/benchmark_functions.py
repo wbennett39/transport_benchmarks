@@ -631,7 +631,7 @@ def write_to_file(xs, phi, uncol, tfinal, source_name, npnts, x0_or_sigma):
             f.create_dataset(source_name + f'/t = {tfinal}' + f'x0={x0_or_sigma}', (3, npnts), dtype = "f", data=(xs, phi, uncol))
         f.close()
     else:
-         with h5py.File(bench_file_path,'r+') as f:
+        with h5py.File(bench_file_path,'r+') as f:
             if f.__contains__(source_name + f'/t = {tfinal}'):
                 del f[source_name + f'/t = {tfinal}'] 
             f.create_dataset(source_name + f'/t = {tfinal}', (3, npnts), dtype = "f", data=(xs, phi, uncol))
