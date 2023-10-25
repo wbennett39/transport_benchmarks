@@ -44,8 +44,12 @@ class make_benchmark:
     def integrate(self, t, npnts):
         self.t = t
         print("t = ", t)
+    
         self.npnts = npnts
         self.xs = np.linspace(0, t + self.x0, npnts)
+        if self.source_type == 'plane_IC':
+            if self.t >50:
+                self.xs = np.linspace(0,75, self.npnts)
         if self.source_type == "gaussian_IC_2D":
             if t == 1:
                 self.xs = np.linspace(0.0, 3.7, npnts)

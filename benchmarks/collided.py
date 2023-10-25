@@ -14,6 +14,7 @@ from .benchmark_functions import  P1_gaussian_mat_integrand
 from .benchmark_functions import  P1_su_olson_term1_integrand, P1_su_olson_term2_integrand
 from .benchmark_functions import  P1_gaussian_term1_integrand, P1_gaussian_term2_integrand
 from .benchmark_functions import  find_su_olson_interval
+from .benchmark_functions import  point_collided_1, point_collided_2
 import scipy.integrate as integrate
 import math
 import numpy as np
@@ -161,6 +162,12 @@ class collided_class:
             temp[ix] = self.collided_line_source(rho, t, c)
         return temp
     
+    def point_source(self, rhos, t, c):
+        res1  = integrate.nquad(point_collided_2, [[0, math.pi]], args = (rho, t, c), opts = [opts0])[0]
+        res2 = point_collided_1(rho, t, c)
+
+        return res1 + res2
+
     ########## su olson problem ########################################
     
     def P1_su_olson_rad_first_interval(self, tau, x, t):
@@ -262,5 +269,7 @@ class collided_class:
             return self.P1_gaussian_rad(xs, t, self.sigma)
         elif self.source_type == "P1_gaussian_mat":
             return self.P1_gaussian_mat(xs, t, self.sigma)
+        elif self.source_type == 'point_source':
+            return self.point_source(xs, t, c)
             
         

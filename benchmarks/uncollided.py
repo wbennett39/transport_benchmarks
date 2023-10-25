@@ -105,6 +105,16 @@ class uncollided_class:
             temp[ix] = uncollided_gauss_2D_integrand(0, 0, rho, 0, t)
         return temp
     
+    def point_source(self, rhos, t):   
+        temp = rhos*0
+        for ix in range(rhos.size):
+            rho = rhos[ix]
+            if abs(rho-t) <= 1e-10:
+                temp[ix] = math.exp(-t)/4/math.pi/t**2/rho
+        return temp
+
+
+    
     def __call__(self, xs, t):
         if self.source_type == 'plane_IC':
             return self.plane_IC(xs, t)
@@ -120,6 +130,8 @@ class uncollided_class:
             return self.gaussian_IC_2D(xs, t)
         elif self.source_type == "line_source":
             return self.line_source(xs, t)
+        elif self.source_type == 'point_source':
+            return self.point_source(xs, t)
         
         
         

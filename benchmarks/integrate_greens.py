@@ -57,6 +57,12 @@ def line_source(t, npnts, c =1.0):
     bench_class.integrate(t, npnts)
     bench_class.save()
     bench_class.plot(fign)
+def point_source(t, npnts, c =1.0):
+    fign = 7
+    bench_class = make_benchmark("point_source", 1e-16, 1e-16, 0, c)
+    bench_class.integrate(t, npnts)
+    bench_class.save()
+    bench_class.plot(fign)
     
     
 def do_all(npnts = [2500, 2500, 2500, 2500, 2500, 2500, 2500]):

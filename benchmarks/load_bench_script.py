@@ -22,9 +22,7 @@ def selector_func(source):
         return_array[7] = 1
     return return_array
     
-def load_func(source, tfinal, xs):
-    x0 = 0.5
-    t0 = 5
+def load_func(source, tfinal, xs, x0 = 0.5, t0 = 5):
     source_selector_array = selector_func(source)
     load_object = load_bench(source_selector_array, tfinal, x0)
     res = load_object(xs)

@@ -35,8 +35,7 @@ To run more solutions, run `greens.do_all()`. Solutions at different times can b
 
 ``line_source(t, npnts)``
 
-### Different evaluation times
-At this release, the integrator easily computes solutions at any time that the user specifies. However, the loading module `load_bench` only returns solutions at `t=1`, `t=5` and `t=10`. To load solutions at different times, first compute them with the integrator then modify the ``__init__`` argument of the `load_bench` class  in the `load_bench.py` script ``(def __init__(self, source_type, tfinal, x0, t_eval_times = [1, 5, 10]))`` to include the desired evaluation time. 
+
 
 ### Notes on the Gaussian pulse and source
 Since the Gaussian sources are infinite, it is necessary to choose a solution interval width where the solution is practically zero at the edge. To this end, the integrator checks at what x location the value of the solution goes to a user specified tolerance and and prints "solution goes to (tol) at (x val)". The script `benchmarks.py` takes this information into account and uses a different `x0` for each evaluation time. For example, since the solution for the Gaussian pulse is smaller than `1e-10` by `x=3.16`, the code sets,
