@@ -163,10 +163,13 @@ class collided_class:
         return temp
     
     def point_source(self, rhos, t, c):
-        res1  = integrate.nquad(point_collided_2, [[0, math.pi]], args = (rho, t, c), opts = [opts0])[0]
-        res2 = point_collided_1(rho, t, c)
-
-        return res1 + res2
+        temp = rhos*0
+        for ix in range(rhos.size):
+            rho = rhos[ix]
+            res1  = integrate.nquad(point_collided_2, [[0, math.pi]], args = (rho, t, c), opts = [opts0])[0]
+            res2 = point_collided_1(rho, t, c)
+            temp[ix] =  res1 + res2
+        return temp
 
     ########## su olson problem ########################################
     

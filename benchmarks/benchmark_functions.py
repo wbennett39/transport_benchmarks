@@ -310,19 +310,19 @@ def point_collided_2(u, r, t, c):
         # complex_term = (eta + 1j * zz)*xi**3 * np.exp(exp_arg)
         complex_term = (eta + 1j * zz) * np.exp(c*t*((1 - eta**2)*xi/2.))*xi**3
         
-        result =  (1/2/math.pi) * math.exp(-t)/4/math.pi/r * (c/2)**2 * (1 - eta**2) * (1/math.cos(u/2))**2 * complex_term.real
+        result =  (1/2/math.pi) * math.exp(-t)/4/math.pi/(r+1e-12) * (c/2)**2 * (1 - eta**2) * (1/math.cos(u/2))**2 * complex_term.real
         
     return result 
 
 @njit
 def point_collided_1(r,t,c):
     
-    eta = r/t
+    eta = r/(t+1e-16)
     # c = 1
     if eta >= 1:
         return 0.0
     else:
-        result = math.exp(-t)/4/math.pi/r/t * math.log((1 + eta)/(1-eta)) * c
+        result = math.exp(-t)/4/math.pi/(r + 1e-16)/(t+1e-16) * math.log((1 + eta)/(1-eta)) * c
     return result 
 
 @jit_F1
