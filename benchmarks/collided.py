@@ -49,7 +49,11 @@ class collided_class:
             if counter == 100:
                 print("x=", xs[ix])
                 counter = 0 
-            temp[ix] = integrate.nquad(F1, [[0, math.pi], [-self.x0, self.x0]], args =  (0.0, xs[ix], t, 0, c), opts = [opts0, opts0])[0]
+            left_space = xs[ix]-t
+            right_space = xs[ix] + t
+            left_int_bounds = max(-self.x0, left_space)
+            right_int_bounds = min(self.x0, right_space)
+            temp[ix] = integrate.nquad(F1, [[0, math.pi], [left_int_bounds, right_int_bounds]], args =  (0.0, xs[ix], t, 0, c), opts = [opts0, opts0])[0]
             counter += 1
         return temp
     

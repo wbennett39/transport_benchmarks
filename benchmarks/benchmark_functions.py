@@ -199,6 +199,7 @@ def F1(args):
     ## define new variables  ##
     xp = x-s
     tp = t-tau
+
     if abs(xp) < tp and tp > 0:
         
         eta = xp/tp
@@ -212,9 +213,9 @@ def F1(args):
         # if abs(xi.imag) < 1e-16:
         #     xi = xi.real + 0.0*1j
         
-        complex_term = cmath.exp(c*tp*((1. - eta**2)*xi/2.))*xi**2
+        complex_term = cmath.exp(tp*(c-2)*((1. - eta**2)*xi/2.))*xi**2
 
-        res = (1./math.cos(u/2.0))**2*complex_term.real * (c/math.pi/8.0) * (1. - eta**2) * math.exp(-tp) * source(s, source_type)
+        res = (1./math.cos(u/2.0))**2*complex_term.real * (c/math.pi/8.0) * (1. - eta**2)  * source(s, source_type)
     
         return res
     
@@ -249,9 +250,9 @@ def F1_spacefirst(args):
         # if abs(xi.imag) < 1e-15:
         #     xi = xi.real + 0.0*1j
         
-        complex_term = cmath.exp(c*tp*((1 - eta**2)*xi/2.))*xi**2
+        complex_term = cmath.exp(tp*(c-1)*((1 - eta**2)*xi/2.))*xi**2
 
-        res = (1/math.cos(u/2.0))**2*complex_term.real * (c/math.pi/8) * (1 - eta**2) * math.exp(-tp) * source(s, source_type)
+        res = (1/math.cos(u/2.0))**2*complex_term.real * (c/math.pi/8) * (1 - eta**2)  * source(s, source_type)
     
         return res
     
