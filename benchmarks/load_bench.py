@@ -24,7 +24,7 @@ class load_bench:
         self.source_type = source_type
         self.tfinal = tfinal
         f = h5py.File(benchmark_file_path, "r")
-        self.source_type_str = ["plane_IC", "square_IC", "square_source", "gaussian_IC", "MMS", "gaussian_source", "gaussian_IC_2D", "line_source"]
+        self.source_type_str = ["plane_IC", "square_IC", "square_source", "gaussian_IC", "MMS", "gaussian_source", "gaussian_IC_2D", "line_source", 'point_source']
         # self.t_eval_str = ["t = 1", "t = 5", "t = 10"] 
         self.t_eval_str = []
         for it in range(len(t_eval_times)):

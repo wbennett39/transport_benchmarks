@@ -606,7 +606,7 @@ def make_benchmark_file_structure():
     source_name_list = ['plane_IC', 'square_IC', 'square_source', 'gaussian_IC', 
                         'gaussian_source', 'gaussian_IC_2D', 'line_source', 
                         "P1_su_olson_rad", "P1_su_olson_mat", "P1_gaussian_rad_thick", 
-                        "P1_gaussian_mat_thick"]
+                        "P1_gaussian_mat_thick", 'point_source']
     
     f = h5py.File(bench_file_path, "a")
     
