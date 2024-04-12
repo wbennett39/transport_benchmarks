@@ -23,7 +23,7 @@ from .collided import collided_class
 ###############################################################################
 
 class make_benchmark:
-    def __init__(self, source_type, x0, t0, sigma, c = 1.0):
+    def __init__(self, source_type, x0, t0, sigma, c = 1.0, choose_xs = False, xpnts = np.array([0.0])):
         self.x0 = x0
         self.t0 = t0
         self.source_type = source_type
@@ -35,6 +35,8 @@ class make_benchmark:
         self.thick_sources = ['P1_su_olson_rad']
         self.sigma = sigma
         self.c = c
+        self.choose_xs = choose_xs
+        self.xpnts_given = xpnts
     
     def recall_collided_uncollided_classes(self):
         self.call_uncollided = uncollided_class(self.source_type, self.x0, self.t0, self.sigma)
@@ -44,74 +46,80 @@ class make_benchmark:
     def integrate(self, t, npnts):
         self.t = t
         print("t = ", t)
-    
-        self.npnts = npnts
-        self.xs = np.linspace(0, t + self.x0, npnts)
-        if self.source_type == 'plane_IC':
-            if self.t >50:
-                self.xs = np.linspace(0,75, self.npnts)
-        if self.source_type == "gaussian_IC_2D":
-            if t == 1:
-                self.xs = np.linspace(0.0, 3.7, npnts)
-            elif t == 5:
-                self.xs = np.linspace(0.0, 7.3, npnts)
-            elif t == 10:
-                self.xs = np.linspace(0.0, 12.4, npnts)
-            
-        elif self.source_type == "gaussian_IC":
-            if t == 1:
-                self.xs = np.linspace(0.0, 3.85, npnts)
-            elif t == 5:
-                self.xs = np.linspace(0.0, 7.7, npnts)
-            elif t == 10:
-                self.xs = np.linspace(0.0, 12.4, npnts)
-        elif self.source_type == "gaussian_source":
-            if t == 1:
-                self.xs = np.linspace(0.0, 3.75, npnts)
-            elif t == 5:
-                self.xs = np.linspace(0.0, 7.5, npnts)
-            elif t == 10:
-                self.xs = np.linspace(0.0, 12.2, npnts)
-        
-        elif (self.source_type == "P1_gaussian_rad" or self.source_type == "P1_gaussian_mat"):
-            if t == 0.1:
-                self.xs = np.linspace(0.0, 2.9, npnts)
-            elif t == 0.3123:
-                self.xs = np.linspace(0.0, 3.1, npnts)
-            elif t == 1.0:
-                self.xs = np.linspace(0.0, 3.5, npnts)
-            elif t == 3.16228:
-                self.xs = np.linspace(0.0, 4.5, npnts)
-            elif t == 10.0:
-                self.xs = np.linspace(0.0, 9.0, npnts)
-            elif t == 31.6228:
-                self.xs = np.linspace(0.0, 20.0, npnts)
-            elif t == 100.0:
-                self.xs = np.linspace(0.0, 45.0, npnts)
+        if self.choose_xs == False:
+            self.npnts = npnts
+            self.xs = np.linspace(0, t + self.x0, npnts)
+            if self.source_type == 'plane_IC':
+                if self.t >50:
+                    self.xs = np.linspace(0,75, self.npnts)
+            if self.source_type == "gaussian_IC_2D":
+                if t == 1:
+                    self.xs = np.linspace(0.0, 3.7, npnts)
+                elif t == 5:
+                    self.xs = np.linspace(0.0, 7.3, npnts)
+                elif t == 10:
+                    self.xs = np.linspace(0.0, 12.4, npnts)
                 
+            elif self.source_type == "gaussian_IC":
+                if t == 1:
+                    self.xs = np.linspace(0.0, 3.85, npnts)
+                elif t == 5:
+                    self.xs = np.linspace(0.0, 7.7, npnts)
+                elif t == 10:
+                    self.xs = np.linspace(0.0, 12.4, npnts)
+            elif self.source_type == "gaussian_source":
+                if t == 1:
+                    self.xs = np.linspace(0.0, 3.75, npnts)
+                elif t == 5:
+                    self.xs = np.linspace(0.0, 7.5, npnts)
+                elif t == 10:
+                    self.xs = np.linspace(0.0, 12.2, npnts)
+            
+            elif (self.source_type == "P1_gaussian_rad" or self.source_type == "P1_gaussian_mat"):
+                if t == 0.1:
+                    self.xs = np.linspace(0.0, 2.9, npnts)
+                elif t == 0.3123:
+                    self.xs = np.linspace(0.0, 3.1, npnts)
+                elif t == 1.0:
+                    self.xs = np.linspace(0.0, 3.5, npnts)
+                elif t == 3.16228:
+                    self.xs = np.linspace(0.0, 4.5, npnts)
+                elif t == 10.0:
+                    self.xs = np.linspace(0.0, 9.0, npnts)
+                elif t == 31.6228:
+                    self.xs = np.linspace(0.0, 20.0, npnts)
+                elif t == 100.0:
+                    self.xs = np.linspace(0.0, 45.0, npnts)
+                else:
+                    self.xs = np.linspace(0.0, self.x0 + t/math.sqrt(3), npnts)
+            elif self.source_type in ['shell_source', 'point_source', 'line_source']:
+                self.xs = np.linspace(0.000001, self.x0 + t, npnts)
+                    
 
-            # if t == 1:
-            #     self.xs = np.linspace(0.0, 1600, npnts)
-            # elif t == 5:
-            #     self.xs = np.linspace(0.0, 1700, npnts)
-            # elif t == 10:
-            #     self.xs = np.linspace(0.0, 1800, npnts)
-            # elif t == 100:
-            #     self.xs = np.linspace(0.0, 1862, npnts)
-            else:
-                qself.xs = np.linspace(0.0, self.x0 + t/math.sqrt(3), npnts)
+                # if t == 1:
+                #     self.xs = np.linspace(0.0, 1600, npnts)
+                # elif t == 5:
+                #     self.xs = np.linspace(0.0, 1700, npnts)
+                # elif t == 10:
+                #     self.xs = np.linspace(0.0, 1800, npnts)
+                # elif t == 100:
+                #     self.xs = np.linspace(0.0, 1862, npnts)
 
-        elif self.source_type == 'P1_su_olson_mat' or self.source_type == 'P1_su_olson_rad':
-            if t < 10.0:
-                self.xs = np.linspace(0.0, self.x0 + t/math.sqrt(3), npnts)
-            elif t == 10.0:
-                self.xs = np.linspace(0.0, 6.35, npnts)
-            elif t == 31.6228:
-                self.xs = np.linspace(0.0, 18.9, npnts)
-            elif t == 100.0:
-                self.xs = np.linspace(0.0, 43.9, npnts)
 
-    
+            elif self.source_type == 'P1_su_olson_mat' or self.source_type == 'P1_su_olson_rad':
+                if t < 10.0:
+                    self.xs = np.linspace(0.0, self.x0 + t/math.sqrt(3), npnts)
+                elif t == 10.0:
+                    self.xs = np.linspace(0.0, 6.35, npnts)
+                elif t == 31.6228:
+                    self.xs = np.linspace(0.0, 18.9, npnts)
+                elif t == 100.0:
+                    self.xs = np.linspace(0.0, 43.9, npnts)
+
+        else:
+            self.xs = self.xpnts_given
+            self.npnts = self.xs.size
+            
         self.uncollided_sol = self.call_uncollided(self.xs, t)
         self.collided_sol = self.call_collided(self.xs, t, self.c)
 

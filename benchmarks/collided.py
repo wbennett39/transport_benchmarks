@@ -175,6 +175,20 @@ class collided_class:
             temp[ix] =  res1 + res2
         return temp
 
+    def shell_source(self, rhos, t, c):
+        R = self.x0
+        # q0 = 4 * math.pi * R**3 / 3
+        temp = rhos *0
+        for ix in range(rhos.size):
+            r = rhos[ix]
+            # integrand = lambda omega: omega * (self.plane_IC(np.array([np.abs(R*omega-r)]), t, c) - self.plane_IC(np.array([np.abs(R*omega+r)]), t, c)) 
+            integrand1 = lambda omega: integrate.nquad(F1, [[0, math.pi]], args =  (0.0, 0.0, abs(R*omega - r), t, 0, c), opts = [opts0])[0]
+            integrand2 = lambda omega: integrate.nquad(F1, [[0, math.pi]], args =  (0.0, 0.0, abs(R*omega + r), t, 0, c), opts = [opts0])[0]
+            integrand = lambda omega: omega * (integrand1(omega) - integrand2(omega))
+            res = integrate.nquad(integrand, [[0, 1]], opts = [opts0])[0]
+            temp[ix] = res * 3 / 4 /math.pi /R / (r + 1e-16)
+        return temp 
+ 
     ########## su olson problem ########################################
     
     def P1_su_olson_rad_first_interval(self, tau, x, t):
@@ -278,5 +292,7 @@ class collided_class:
             return self.P1_gaussian_mat(xs, t, self.sigma)
         elif self.source_type == 'point_source':
             return self.point_source(xs, t, c)
+        elif self.source_type == 'shell_source':
+            return self.shell_source(xs, t, c)
             
         

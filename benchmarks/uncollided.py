@@ -9,6 +9,7 @@ import math
 import scipy.integrate as integrate 
 from .benchmark_functions import uncollided_square_source, uncollided_square_IC, gaussian_source_integrand, uncollided_gauss_2D_integrand
 import numpy as np
+
 def opts0(*args, **kwargs):
        return {'limit':10000000}
 def opts1(*args, **kwargs):
@@ -111,7 +112,32 @@ class uncollided_class:
             rho = rhos[ix]
             if abs(rho-t) <= 1e-10:
                 temp[ix] = math.exp(-t)/4/math.pi/t**2/rho
+        return temp*0
+    
+    def shell_source(self, xs, t):
+        # R = self.x0
+        # # a = self.x0/2
+        # q0 = 4 * math.pi * R**3 / 3
+        # temp = rhos *0
+        # for ix in range(rhos.size):
+        #     r = rhos[ix]
+        #     integrand = lambda omega: omega * (self.plane_IC(np.array([np.abs(R*omega-r)]), t) - self.plane_IC(np.array([np.abs(R*omega+r)]), t)) 
+        #     res = integrate.nquad(integrand, [[0, 1]], opts = [opts0])[0]
+        #     temp[ix] = res * 3 / 4 /math.pi /R / (r + 1e-16)
+        temp = xs*0 
+        x0 = self.x0
+        sigma_abs = 1
+        N01  = 4 * math.pi * x0**3 / 3
+        N0 = 1
+        n0 = N0 / (4. * math.pi / 3. * (x0 ** 3)) / (4. * math.pi)
+        for ix, r in enumerate(xs):
+            tt = t + 1e-12
+            mu_crit = min(1., max(-1.,0.5*(tt/r+r/tt-x0**2/(r*tt))))
+            r2 = r ** 2 + t ** 2 - 2 * mu_crit * r * t
+            # if np.sqrt(r2) < self.x0: 
+            temp[ix] = n0 * 2 * math.pi *  (1. - mu_crit ) * np.exp(-t * sigma_abs) 
         return temp
+
 
 
     
@@ -132,6 +158,8 @@ class uncollided_class:
             return self.line_source(xs, t)
         elif self.source_type == 'point_source':
             return self.point_source(xs, t)
+        elif self.source_type == 'shell_source':
+            return self.shell_source(xs, t)
         
         
         
