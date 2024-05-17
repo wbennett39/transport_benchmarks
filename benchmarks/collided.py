@@ -186,7 +186,7 @@ class collided_class:
             integrand2 = lambda omega: integrate.nquad(F1, [[0, math.pi]], args =  (0.0, 0.0, abs(R*omega + r), t, 0, c), opts = [opts0])[0]
             integrand = lambda omega: omega * (integrand1(omega) - integrand2(omega))
             res = integrate.nquad(integrand, [[0, 1]], opts = [opts0])[0]
-            temp[ix] = res * 3 / 4 /math.pi /R / (r + 1e-16)
+            temp[ix] = res * 3 / 4 /math.pi /R / (r + 1e-20)
         return temp 
  
     ########## su olson problem ########################################

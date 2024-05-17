@@ -602,9 +602,11 @@ def P1_gaussian_mat_integrand(args):
 
 ######################saving solution##########################################
 def make_benchmark_file_structure():
-#    data_folder = Path("benchmarks")
-    data_folder = sys.path('benchmarks')
-    bench_file_path = data_folder / 'benchmarks.hdf5'
+    data_folder = Path("benchmarks")
+    
+    # data_folder = sys.path('benchmarks')
+    # print(data_folder)
+    bench_file_path = str(data_folder) / 'benchmarks.hdf5'
     source_name_list = ['plane_IC', 'square_IC', 'square_source', 'gaussian_IC', 
                         'gaussian_source', 'gaussian_IC_2D', 'line_source', 
                         "P1_su_olson_rad", "P1_su_olson_mat", "P1_gaussian_rad_thick", 
@@ -620,10 +622,10 @@ def make_benchmark_file_structure():
     f.close()
 
 def write_to_file(xs, phi, uncol, tfinal, source_name, npnts, x0_or_sigma):
-#    data_folder = Path("transport_benchmarks/benchmarks")
-    data_folder = '/Users/bennett/Documents/Github/transport_benchmarks/benchmarks/'
-
-    bench_file_path = data_folder + 'benchmarks.hdf5'
+    data_folder = Path("benchmarks")
+    # data_folder = '/Users/bennett/Documents/Github/transport_benchmarks/benchmarks/'
+    print(str(data_folder))
+    bench_file_path = str(data_folder) + '/benchmarks.hdf5'
 #
     if x0_or_sigma == 300:
         if source_name == 'P1_gaussian_rad':

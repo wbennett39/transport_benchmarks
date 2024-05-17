@@ -103,7 +103,7 @@ def compare_rms(tfinal, M):
         
 def plot_all_benchmarks(tfinal):
     M = 3
-    source_list = ["plane_IC", "square_IC", "square_source", "gaussian_IC", "gaussian_source", "MMS", "gaussian_IC_2D", "line_source"]
+    source_list = ["plane_IC", "square_IC", "square_source", "gaussian_IC", "gaussian_source", "MMS", "gaussian_IC_2D", "line_source", "shell_source"]
     for count, source in enumerate(source_list):
         print(source)
         plotter = rms_plotter(tfinal, M, source)

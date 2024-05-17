@@ -80,7 +80,7 @@ def shell_source(t, npnts, c = 1.0, x0 = 0.5, choose_xs = False, xpnts = np.arra
     bench_class = make_benchmark("shell_source", x0, 1e-16, 0, c, choose_xs, xpnts)
     bench_class.integrate(t, npnts)
     bench_class.save()
-    bench_class.plot(fign)
+    # bench_class.plot(fign)
     return bench_class.xs, bench_class.collided_sol, bench_class.uncollided_sol
     
     

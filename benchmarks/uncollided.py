@@ -126,16 +126,19 @@ class uncollided_class:
         #     temp[ix] = res * 3 / 4 /math.pi /R / (r + 1e-16)
         temp = xs*0 
         x0 = self.x0
-        sigma_abs = 1
+        sigma_abs = 1.0
         N01  = 4 * math.pi * x0**3 / 3
         N0 = 1
         n0 = N0 / (4. * math.pi / 3. * (x0 ** 3)) / (4. * math.pi)
         for ix, r in enumerate(xs):
-            tt = t + 1e-12
-            mu_crit = min(1., max(-1.,0.5*(tt/r+r/tt-x0**2/(r*tt))))
-            r2 = r ** 2 + t ** 2 - 2 * mu_crit * r * t
-            # if np.sqrt(r2) < self.x0: 
-            temp[ix] = n0 * 2 * math.pi *  (1. - mu_crit ) * np.exp(-t * sigma_abs) 
+            if t >0:
+                tt = t 
+                mu_crit = min(1., max(-1.,0.5*(tt/r+r/tt-x0**2/(r*tt))))
+                r2 = r ** 2 + t ** 2 - 2 * mu_crit * r * t
+                # if np.sqrt(r2) < self.x0: 
+                temp[ix] = n0 * 2 * math.pi *  (1. - mu_crit ) * np.exp(-t * sigma_abs) 
+            elif t == 0:
+                temp[xs <= self.x0] = n0 * 4 * math.pi
         return temp
 
 
