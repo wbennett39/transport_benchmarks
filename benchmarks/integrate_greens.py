@@ -12,7 +12,7 @@ import numpy as np
 
 def plane_IC(t, npnts, c = 1.0, choose_xs = False, xpnts = np.array([0.0])):
     fign = 1
-    bench_class = make_benchmark('plane_IC', 1e-16, 1e-16, 0, c=1.0, choose_xs = False, xpnts = np.array([0.0]))
+    bench_class = make_benchmark('plane_IC', 1e-16, 1e-16, 0, c=1.0, choose_xs = choose_xs, xpnts = xpnts)
     bench_class.integrate(t, npnts)
     bench_class.save()
     bench_class.plot(fign)
@@ -20,7 +20,7 @@ def plane_IC(t, npnts, c = 1.0, choose_xs = False, xpnts = np.array([0.0])):
     
 def square_IC(t, npnts, x0 = 0.5, c = 1.0, choose_xs = False, xpnts = np.array([0.0])):
     fign = 2
-    bench_class = make_benchmark('square_IC', x0, 1e-16, 0, c)
+    bench_class = make_benchmark('square_IC', x0, 1e-16, 0, c, choose_xs=choose_xs, xpnts=xpnts)
     bench_class.integrate(t, npnts)
     bench_class.save()
     bench_class.plot(fign)
@@ -28,7 +28,7 @@ def square_IC(t, npnts, x0 = 0.5, c = 1.0, choose_xs = False, xpnts = np.array([
     
 def square_source(t, npnts, x0 = 0.5, t0 = 5, c = 1.0, choose_xs = False, xpnts = np.array([0.0])):
     fign = 3
-    bench_class = make_benchmark('square_source', x0, t0, 0, c)
+    bench_class = make_benchmark('square_source', x0, t0, 0, c, choose_xs=choose_xs, xpnts=xpnts)
     bench_class.integrate(t, npnts)
     bench_class.save()
     bench_class.plot(fign)
@@ -36,7 +36,7 @@ def square_source(t, npnts, x0 = 0.5, t0 = 5, c = 1.0, choose_xs = False, xpnts 
     
 def gaussian_IC(t, npnts, sigma = 0.5, c = 1.0, choose_xs = False, xpnts = np.array([0.0])):
     fign = 3
-    bench_class = make_benchmark('gaussian_IC', 4.0, 1e-16, sigma, c)
+    bench_class = make_benchmark('gaussian_IC', 4.0, 1e-16, sigma, c, choose_xs=choose_xs, xpnts=xpnts)
     bench_class.integrate(t, npnts)
     bench_class.save()
     bench_class.plot(fign)
@@ -45,7 +45,7 @@ def gaussian_IC(t, npnts, sigma = 0.5, c = 1.0, choose_xs = False, xpnts = np.ar
 
 def gaussian_source(t, npnts, t0 = 5, sigma = 0.5, c = 1.0, choose_xs = False, xpnts = np.array([0.0])):
     fign = 4
-    bench_class = make_benchmark('gaussian_source', 4.0, t0, sigma, c)
+    bench_class = make_benchmark('gaussian_source', 4.0, t0, sigma, c, choose_xs=choose_xs, xpnts=xpnts)
     bench_class.integrate(t, npnts)
     bench_class.save()
     bench_class.plot(fign)
@@ -53,7 +53,7 @@ def gaussian_source(t, npnts, t0 = 5, sigma = 0.5, c = 1.0, choose_xs = False, x
     
 def gaussian_IC_2D(t, npnts, sigma = 0.5, c = 1.0, choose_xs = False, xpnts = np.array([0.0])):
     fign = 5
-    bench_class = make_benchmark('gaussian_IC_2D', 0.5, 1e-16, sigma, c)
+    bench_class = make_benchmark('gaussian_IC_2D', 0.5, 1e-16, sigma, c, choose_xs=choose_xs, xpnts=xpnts)
     bench_class.integrate(t, npnts)
     bench_class.save()
     bench_class.plot(fign)
@@ -61,7 +61,7 @@ def gaussian_IC_2D(t, npnts, sigma = 0.5, c = 1.0, choose_xs = False, xpnts = np
 
 def line_source(t, npnts, c =1.0, choose_xs = False, xpnts = np.array([0.0])):
     fign = 6
-    bench_class = make_benchmark("line_source", 0.5, 1e-16, 0, c)
+    bench_class = make_benchmark("line_source", 0.5, 1e-16, 0, c, choose_xs=choose_xs, xpnts=xpnts)
     bench_class.integrate(t, npnts)
     bench_class.save()
     bench_class.plot(fign)
@@ -69,7 +69,7 @@ def line_source(t, npnts, c =1.0, choose_xs = False, xpnts = np.array([0.0])):
     
 def point_source(t, npnts, c =1.0, choose_xs = False, xpnts = np.array([0.0])):
     fign = 7
-    bench_class = make_benchmark("point_source", 1e-16, 1e-16, 0, c)
+    bench_class = make_benchmark("point_source", 1e-16, 1e-16, 0, c, choose_xs =choose_xs,xpnts=xpnts)
     bench_class.integrate(t, npnts)
     bench_class.save()
     bench_class.plot(fign)
