@@ -15,25 +15,27 @@ To plot, run `plotter.plot_all_benchmarks(tfinal)`. Results will be saved in the
 ### Creating solutions
 To run more solutions, run `greens.do_all()`. Solutions at different times can be found by running functions from the `integrate_greens` script. For example, to calculate another time point for the square source, run `greens.square_source(tfinal, npnts, x0 = 0.5, t0 = 5)` where `npnts` is the number of evaluation points. The parameters `x0` and `t0` do not have meaning for all source configurations. The arguments for each source are:
 
-``plane_IC(t, npnts)``
+Setting `choose_xs=True` allows the user to specify the evaluation points in `xpnts`. If the length of `xpnts` is different than the user input `npnts`, `npnts` is overwritten to reflect the length of the user specified solution vector.  
 
-``square_IC(t, npnts, x0 = 0.5)``
+``plane_IC(t, npnts, c = 1.0, choose_xs = False, xpnts = np.array([0.0])):``
 
-``square_source(t, npnts, x0 = 0.5, t0 = 5)``
+``square_IC(t, npnts, x0 = 0.5, c = 1.0, choose_xs = False, xpnts = np.array([0.0]))``
 
-``gaussian_IC(t, npnts, sigma = 0.5)``
+``square_source(t, npnts, x0 = 0.5, t0 = 5, c = 1.0, choose_xs = False, xpnts = np.array([0.0]))``
 
-``gaussian_source(t, npnts, t0 = 5, sigma = 0.5)``
+``gaussian_IC(t, npnts, sigma = 0.5, c = 1.0, choose_xs = False, xpnts = np.array([0.0]))``
 
-
-``gaussian_IC(t, npnts)``
-
-``gaussian_source(t, npnts, t0 = 5)``
+``gaussian_source(t, npnts, t0 = 5, sigma = 0.5, c = 1.0, choose_xs = False, xpnts = np.array([0.0])):``
 
 
-``gaussian_IC_2D(t, npnts, sigma = 0.5)``
+``gaussian_IC_2D(t, npnts, sigma = 0.5, c = 1.0, choose_xs = False, xpnts = np.array([0.0]))``
 
-``line_source(t, npnts)``
+``line_source(t, npnts, c =1.0, choose_xs = False, xpnts = np.array([0.0]))``
+
+
+``point_source(t, npnts, c =1.0, choose_xs = False, xpnts = np.array([0.0]))``
+
+``shell_source(t, npnts, c = 1.0, x0 = 0.5, choose_xs = False, xpnts = np.array([0.0]))``
 
 
 
