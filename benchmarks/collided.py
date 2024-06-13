@@ -61,7 +61,10 @@ class collided_class:
         """ source function for the gaussian source and the square source (1-gaussian, 0-square)
         """
         ab = find_intervals_time(t, t0, x, s)
-        solution = integrate.nquad(F1_spacefirst, [[0, math.pi], [ab[0],ab[1]]], args =  (s, x, t, source, c), opts = [opts1, opts1])[0]
+        if ab[0] == ab[1]:
+            solution = 0.0
+        else:
+            solution = integrate.nquad(F1_spacefirst, [[0, math.pi], [ab[0],ab[1]]], args =  (s, x, t, source, c), opts = [opts1, opts1])[0]
         return solution
         
     def square_source(self, xs, t, c):
